@@ -6,6 +6,7 @@ SdFat sd;
 
 #define SDCS 10
 #define BUFFER_SIZE 100
+#define LED_STATUS 9
 uint8_t buf[BUFFER_SIZE];
 
 void setup() {
@@ -16,20 +17,33 @@ void setup() {
   if (!sd.begin(SDCS,SPI_HALF_SPEED)) {
     Serial.println("Erreur initialisation");
     return;
+  }else
+    pinMode(LED_STATUS, OUTPUT);
   }
-
-  // Volume total
-  uint32_t volume = int(sd.vol()->blocksPerCluster());  // taille d'un cluster en nombre de blocs
-  volume *= sd.vol()->clusterCount();          // ...fois le nombre de clusters
-  volume *= 512;                               // ...fois la taille d'un blocs (toujours 512 octets)
+  
+  /*  Volume total
+   *  ************
+   */
+  // taille d'un cluster en nombre de blocs ->
+  uint32_t volume = int(sd.vol()->blocksPerCluster());  
+  // ...fois le nombre de clusters ->
+  volume *= sd.vol()->clusterCount();          
+  // ...fois la taille d'un blocs (toujours 512 octets) ->
+  volume *= 512;                               
+  
   Serial.print("Taille du volume: ");
-  Serial.print(volume/1024/1024);              // en mégaoctets
+  // en mégaoctets ->
+  Serial.print(volume/1024/1024);              
   Serial.println(" Mo");
 
-  // Espace libre
+  /*  Espace libre
+   *  ************
+   */
+   
   uint32_t volumelibre = sd.vol()->freeClusterCount();
   volumelibre *= int(sd.vol()->blocksPerCluster());
   volumelibre *= 512;
+  
   Serial.print("Espace libre: ");
   Serial.print(volumelibre/1024/1024);
   Serial.println(" Mo");
@@ -40,7 +54,7 @@ void setup() {
   Serial.println(" ");
 
   // Ouverture du fichier
-  if (!fichier.open(&sd, "toto.txt", O_READ)) {
+  if (!fichier.open(&sd, "HackSdFat.txt", O_READ)) {
     Serial.println("Erreur ouverture fichier");
     return;
   }
