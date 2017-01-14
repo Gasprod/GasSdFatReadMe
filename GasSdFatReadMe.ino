@@ -7,26 +7,23 @@ SdFat sd;
 #define SDCS 10
 #define BUFFER_SIZE 100
 #define LED_STATUS 9
+#define T_TIMES 1
+#define T_DELAY 1000
 uint8_t buf[BUFFER_SIZE];
-
 
 void setup() {
   
   SdFile fichier;
   Serial.begin(115200);
   pinMode(LED_STATUS , OUTPUT);
-
+   
   Serial.println("Initialisation SD...");
-  
-  digitalWrite(LED_STATUS, HIGH);
+  // checkLed();
   
   if (!sd.begin(SDCS,SPI_HALF_SPEED)) {
     Serial.println("Erreur initialisation");
-    digitalWrite(LED_STATUS ,LOW);
     return;
   }
-
-  
 
   // Volume total =>
 
@@ -51,23 +48,21 @@ void setup() {
   Serial.println(" Mo");
 
   // Listage de la racine
-  Serial.println(" ");
+  Serial.println("Listage de la racine ->");
   sd.ls("/", LS_SIZE|LS_R);
   Serial.println(" ");
+  // checkLed();
 
-  digitalWrite(LED_STATUS , LOW);
-  delay(1000);
-
-  digitalWrite(LED_STATUS , HIGH);
   Serial.println("Opening FILE ...");
+  // checkLed();
 
   // Ouverture du fichier
   if (!fichier.open(&sd, "HackSdFat.txt", O_READ)) {
     Serial.println("Erreur ouverture fichier");
-    digitalWrite(LED_STATUS , LOW);
     return;
   }
 
+  // checkLed();
   Serial.println("Reading FILE ...");
  
   /*
@@ -91,10 +86,19 @@ void setup() {
 
   /// Fermeture du fichier
   fichier.close(); 
-
-  digitalWrite(LED_STATUS , LOW);
-
+  //checkLed();
+  return ; 
 }
 
 void loop() {
 }
+
+void checkLed(){
+  
+  for(int i=0;i<T_TIMES;i++){
+    digitalWrite(LED_STATUS, HIGH);
+    delay(T_DELAY);
+    digitalWrite(LED_STATUS, LOW);
+    delay(T_DELAY);
+  }
+ }
